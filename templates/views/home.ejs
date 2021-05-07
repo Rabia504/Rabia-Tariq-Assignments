@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
+</style>
+
+
+</head>
+<body>
+   <header >
+        <div class="header-content"> 
+          <nav class="navbar" role="navigation">
+            <ul class="primary-nav">
+              <li><a class = "child1" href="">Social Network</a></li>
+              <li><a class = "c2" href="">Home</a></li>
+              <li><a class = "c3" href="/requests">Friend Requests</a></li>
+              <li><a class = "c3" href="/profile">Profile</a></li>
+              <li><a class = "c3" href="/login">login</a></li>
+              <li><a class = "c3" href="/signup">signup</a></li>
+              <% if(user){ %>
+              <li><a class = "c3" href="profile"><%= user.fullname %></a></li>
+              <li><a class = "c3" href="post">news feed</a></li>
+              <% } %>
+            </ul>
+          </nav>
+    </header>
+
+<div class="grid">
+
+    <form action="/searchuser" method="post" class="search">
+
+      <div class="form__field">
+        <input type="text" name="username" placeholder="Search through Username" class="form__input">
+        <input type="submit" value="Search" class="button">
+      </div>
+    </form>
+  </div>
+
+  
+  <div align="center" class="s130">
+        <form class="sform" action="/searchuser" method="post" >
+          <div class="inner-sform">
+            <div class="sinput-field first-wrap">
+              <div class="svg-wrapper">
+                <svg xmlns="http://www.w3.org/2000/svg" width=24 height=24 viewBox="0 0 24 24">
+                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                </svg>
+              </div>
+              <input id="search-service" type="text" name="username" placeholder="Search by username?" />
+            </div>
+            <div class="sinput-field second-wrap">
+              <input class="searchbtn" type="submit" value="SEARCH"/>
+            </div>
+          </div>
+        </form>
+      </div>
+
+
+  <div style="margin-top: 50px;">
+    <% if (user && flag) { %>
+   <br>
+      <div class="w3-card w3-round w3-white w3-center" style="width: 300px;margin: 0 auto;">
+        <div class="w3-container">
+          <p>Searched User</p>
+          <img src="/w3images/avatar6.png" alt="Avatar" style="width:50%"><br>
+          <span><%= user.fullname %></span>
+          <div class="w3-row w3-opacity">
+            <div class="w3-full">
+              <form action="/sendrequest" method="POST">
+                <input type="hidden" name="username" value=<%=user.username %>>
+              <input type="submit" class="w3-button w3-block w3-blue w3-section" title="Send Request"><i class="fa fa-user-plus"></i></button>
+            </form>
+              </div>
+          </div>
+        </div>
+      </div>
+      <br>
+       <%} else if(flag) { %>
+
+      <h1>User not found</h1>
+      <% } %>
+  </div>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>signup</title>
+    <link rel="stylesheet" href="../css/form.css">
+</head>
+<body>
+   
+    <div class="sign-up" style="width: 70%;">
+        <h1>Your Profile</h1>
+        <form action="/updateinfo" method="post" >
+            <input type="text" class = "input-box" name="fullname" placeholder="Full Name" value=<%= user.fullname %> readonly><br><br>
+            <input type="text" class = "input-box" name="username" placeholder="Username" value=<%= user.username %> ><br><br>
+            <input type="email" class = "input-box" name="email" placeholder="Enter your email" value=<%= user.email %> ><br><br>
+            <input type="password" class = "input-box" name="password" placeholder="Your Password" value=<%= user.password %> ><br><br>
+            <input type="number" class = "input-box" name="phone" placeholder="Phone No." value=<%= user.phoneNo %> ><br><br>
+            <input type="text" class = "input-box" name="gender" placeholder="Your Gender" value=<%= user.gender %> ><br><br>
+            <input type="date" class = "input-box" name="dob" placeholder="Date of Birth" value=<%= user.dateOfBirth %> ><br><br>
+            <input type="textarea" class = "input-box" name="bio" placeholder="Add Bio" ><br><br>
+            <button type="submit" name="submit" class="btn">Update Profile</button> 
+           
+        </form>
+    </div>
+    
+</body>
+</html>

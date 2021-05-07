@@ -1,0 +1,28 @@
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>signup</title>
+    <link rel="stylesheet" href="../css/form.css">
+</head>
+<body>
+   
+    <div class="sign-up">
+        <h1>Sign Up</h1>
+        <form action="/signup" method="post">
+            <input type="text" class = "input-box" name="fullname" placeholder="Full Name" required><br><br>
+            <input type="text" class = "input-box" name="username" placeholder="Username" required><br><br>
+            <input type="email" class = "input-box" name="email" placeholder="Enter your email" required><br><br>
+            <input type="password" class = "input-box" name="password" placeholder="Your Password" required><br><br>
+            <input type="password" class = "input-box" name="confirmpassword" placeholder="Confirm Password" required><br><br>
+            <input type="number" class = "input-box" name="phone" placeholder="Phone No."><br><br>
+            <input type="text" class = "input-box" name="gender" placeholder="Your Gender" required><br><br>
+            <input type="date" class = "input-box" name="dob" placeholder="Date of Birth"><br><br>
+            <p><span><input type = "checkbox"></span> i agree to terms and conditions </p><br><br>
+            <button type="submit" name="submit" class="btn">Sign up</button> 
+            <p> Do you have an account ?<a href="/login">Sign in</a></p>
+        </form>
+    </div>
+    
+</body>
+</html>
