@@ -5,13 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="../css/home.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
 <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+<link href="http://netdna.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
 html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
@@ -27,12 +28,12 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
               <li><a class = "child1" href="">Social Network</a></li>
               <li><a class = "c2" href="">Home</a></li>
               <li><a class = "c3" href="/requests">Friend Requests</a></li>
-              <li><a class = "c3" href="/profile">Profile</a></li>
-              <li><a class = "c3" href="/login">login</a></li>
-              <li><a class = "c3" href="/signup">signup</a></li>
+              <li><a class = "c3" href="login">login</a></li>
+              <li><a class = "c3" href="signup">signup</a></li>
               <% if(user){ %>
+              <li><a class = "c3" href="/post/<%= user.username %>">news feed</a></li>
               <li><a class = "c3" href="profile"><%= user.fullname %></a></li>
-              <li><a class = "c3" href="post">news feed</a></li>
+              <li><a class = "c3" href="/logout">Logout</a></li>
               <% } %>
             </ul>
           </nav>
@@ -67,22 +68,41 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
           </div>
         </form>
       </div>
-
+<script>
+function Follow(id) {
+	
+  $.ajax({
+    url: '/follow/'+id,
+    type: 'PATCH',
+    data: {
+      receiverID: id
+    },
+    success: function() {
+       
+    }
+  })
+}
+</script>
 
   <div style="margin-top: 50px;">
-    <% if (user && flag) { %>
+    <% if (users && flag) { %>
    <br>
       <div class="w3-card w3-round w3-white w3-center" style="width: 300px;margin: 0 auto;">
         <div class="w3-container">
           <p>Searched User</p>
-          <img src="/w3images/avatar6.png" alt="Avatar" style="width:50%"><br>
-          <span><%= user.fullname %></span>
+          <img src="../images/female-avatar.jpg" alt="Avatar" style="width:50%"><br>
+          <span><h3><b><%= users.fullname %></b></h3></span>
           <div class="w3-row w3-opacity">
             <div class="w3-full">
-              <form action="/sendrequest" method="POST">
-                <input type="hidden" name="username" value=<%=user.username %>>
-              <input type="submit" class="w3-button w3-block w3-blue w3-section" title="Send Request"><i class="fa fa-user-plus"></i></button>
-            </form>
+              <form action="follow/<%= users._id %>" method="POST">
+                <% if(users.followers.includes(user.username)) { %>
+                  <input type="hidden" name="action" value="unfollow">
+                  <button type="submit" class="w3-button w3-block w3-section" style="background-color: #189e83;color: white;" >Unfollow</button>
+                  <%} else { %>
+                <input type="hidden" name="action" value="follow">
+                <button type="submit" class="w3-button w3-block w3-section" style="background-color: #189e83;color: white;">Follow</button>
+               <% } %>
+          </form>
               </div>
           </div>
         </div>

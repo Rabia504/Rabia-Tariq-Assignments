@@ -39,8 +39,6 @@
       }
 
 
- 
-
 #search-service,
 .searchbtn {
   font-family: 'Poppins', sans-serif;
@@ -48,8 +46,6 @@
 
 
 .s130 {
-  
-  min-height: 100vh;
   display: -ms-flexbox;
   display: flex;
   -ms-flex-pack: center;
@@ -211,5 +207,6 @@
     font-size: 13px;
   }
 }
+
 
 /*# sourceMappingURL=Searchs_130.css.map */

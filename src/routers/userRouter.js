@@ -3,11 +3,19 @@ const express = require("express");
 require("../db/conn");
 const User = require("../models/userSchema");
 const router = new express.Router();
+router.use( function( req, res, next ) {
+
+    if ( req.query._method == 'DELETE' ) {
+        req.method = 'DELETE';
+        req.url = req.path;
+    }       
+    next(); 
+  });
 
 router.get("/", (req, res)=>{
     //console.log (req.body);
     
-   res.render('home',{user:[],flag:false});
+   res.render('home',{user:[],users:null, flag:false});
    });
 
    router.get("/signup", (req, res)=>{
@@ -21,11 +29,11 @@ router.get("/", (req, res)=>{
         //console.log(username.length);
         if (username.length)
         {
-            alert('Username already exists');
+            console.log('Username already exists');
         }
         else if(email.length)
         {
-            alert('email already exists');
+            console.log('email already exists');
         }
         else {
             const user = new User({
@@ -62,10 +70,10 @@ router.get("/", (req, res)=>{
         if (result.password == password)
         {
             req.session.username = username;
-            res.status(201).render('home',{user:result, flag:false});
+            res.status(201).render('home',{user:result,users:null, flag:false});
         }
         else {
-            alert("invalid credentials!!!");
+            console.log("invalid credentials!!!");
         }
     }
     catch (error) {
@@ -82,16 +90,19 @@ router.get("/", (req, res)=>{
         if(sess.username)
         {
             const username = req.body.username;
+            const currentuser = await User.findOne({username:sess.username});
+            //console.log(currentuser);
             const user = await User.findOne({username:username});
             if (user) {
-                res.render('home', {user:user,flag:true});
+                
+                res.render('home', {user:currentuser,users:user,flag:true});
             } else { 
-                res.render('home' ,{flag:true});
+                res.render('home' ,{user:currentuser,users:null,flag:true});
             }
         }
         else
         {
-            alert("You are not logged in");
+            console.log("You are not logged in");
             res.render('login');
         }
     } catch (error) {
@@ -115,7 +126,7 @@ router.get("/", (req, res)=>{
             }
         }
         else{
-            alert("You are not logged in");
+            console.log("You are not logged in");
             res.render('login');
         }
     } catch (error) {
@@ -130,25 +141,32 @@ router.post('/updateinfo', async (req, res) => {
 
     try {
         sess = req.session;
+        //console.log(sess.username);
         if(sess.username)
         {
-            //const {id} = req.params;
-            const result = await User.UpdateOne({username:sess.username}, {$set:{
-            username: req.body.username,
+            //console.log(sess.username);
+            User.updateOne({username:sess.username}, {$set:{
             email : req.body.email,
             password: req.body.password,
             phoneNo: req.body.phone,
-            bio: req.body.bio
-        }});
-        alert("Your profile is updated!!!");
-        const user = await User.findOne({username:sess.username});
-        if (user) {
-            res.render('profile', {user:user});
-        } 
+            gender: req.body.gender,
+            dateOfBirth: req.body.dob,
+            bio: req.body.bio }},
+            function (err, docs) {
+                if (err){
+                console.log("error");
+                }
+                else{
+                console.log("profile updated");
+                }
+             });
+          
+             const user = await User.findOne({username:sess.username});
+             res.render('profile', {user:user});
 
        }
        else{
-        alert("You are not logged in");
+        console.log("You are not logged in");
         res.render('login');
        }
     }catch (error) {
@@ -157,29 +175,33 @@ router.post('/updateinfo', async (req, res) => {
 });
 
 
-router.patch('/follow/:id', (req, res) => {
-    const { _id } = req.params;
+router.post('/follow/:id', async (req, res) => {
+    const  id  = req.params.id;
     const uname = req.session.username;
+   
     if (req.body.action === 'follow') {
       try {
+            const user = await User.findOne({_id:id});
+           
             //adding current user to the followers list of the user followed
-            User.findByIdAndUpdate({_id}, { $push:  { followers:uname } },
-            function (err, docs) {
-            if (err){
-            alert(err);
-            }
-            else{
-            alert("user followed");
-            }});
-            //adding to the following list of the current user
-            const user = User.findOne({_id:id});
-            User.UpdateOne({username:uname}, { $push:  { following: user.username } },
+            User.findByIdAndUpdate({_id:id}, { $push:  { followers:uname } },
                 function (err, docs) {
                 if (err){
-                alert(err);
+                console.log(err);
+                }
+                else{
+                console.log("user followed");
+                }});
+
+            //adding to the following list of the current user
+            User.updateOne({username:uname}, { $push:  { following: user.username } },
+                function (err, docs) {
+                if (err){
+                console.log("error");
                 }
                 else{
                 console.log("user added to following");
+                res.status(201).send("User followed");
                 }});
         
       } catch (err) {
@@ -190,23 +212,24 @@ router.patch('/follow/:id', (req, res) => {
     if (req.body.action === 'unfollow') {
         try {
               //removing from followers list
-              User.findByIdAndUpdate({_id}, { $pull:  { followers:uname } },
+              User.findByIdAndUpdate({_id:id}, { $pull:  { followers:uname } },
               function (err, docs) {
                 if (err){
-                alert(err);
+                console.log("error");
                 }
                 else{
-                alert("user unfollowed");
+                console.log("user unfollowed");
               }});
               //removing from the following list of the current user
-              const user =  User.findOne({_id:id});
-              User.UpdateOne({username:uname}, { $pull:  { following: user.username } },
+              const user = await User.findOne({_id:id});
+              User.updateOne({username:uname}, { $pull:  { following: user.username } },
                   function (err, docs) {
                     if (err){
-                    alert(err);
+                    console.log("error");
                     }
                     else{
                     console.log("user removed from following");
+                    res.status(201).send("User unfollowed");
                   }});
 
         } catch (err) {
@@ -218,20 +241,21 @@ router.patch('/follow/:id', (req, res) => {
 
 
 //delete user profile
-router.delete('/delete/:id', async (req, res) => {
+router.delete('/delete/:id', (req, res) => {
 
     try {
         sess = req.session;
         if(sess.username)
         {
-            const {id} = req.params;
-            let choice = confirm("are you sure you want to delete your account?");
-            if(choice){
-            const result =  await Personinfo.deleteOne({_id: id});
-         }
+            const id = req.params.id;
+            User.delete({_id: id}, function (err) {
+                if(err) console.log(err);
+                console.log("Successful deletion");
+              });
+            res.render('login');
 
         }else{
-            alert("You are not logged in");
+            console.log("You are not logged in");
             res.render('login');
         }
 

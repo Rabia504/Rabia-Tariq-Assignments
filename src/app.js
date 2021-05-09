@@ -10,7 +10,7 @@ const app = express();
 
 app.use(session({ secret: 'Shhh',
                   resave: true,
-                  saveUninitialized: true }))
+                  saveUninitialized: true}))
 
 const viewsPath = path.join(__dirname,"../templates/views");
 const partialPath = path.join(__dirname,"../templates/partials");

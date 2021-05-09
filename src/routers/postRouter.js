@@ -4,15 +4,15 @@ const Post = require("../models/postSchema");
 const router = new express.Router();
 
 
-   router.get('/post', async (req, res) => {
+   router.get('/post/:username', async (req, res) => {
+     const uname = req.params.username;
+     req.session.username = uname;
     const posts = await Post.find().sort({ timestamp: -1 });
-    //console.log(posts);
-    //console.log(posts[0].username);
-    res.render('post', {posts: posts});
+    res.render('post', {posts: posts, username:uname});
   });
 
 
-   router.post("/post", async (req, res)=>{
+   router.post("/post/:username", async (req, res)=>{
       try{
               const sess = req.session;
               //console.log(sess.username);
@@ -23,19 +23,17 @@ const router = new express.Router();
                   likes: [],
                   likesCount: 0
               })
-            //   await post.save();
-            //   const p = await Post.getLastInsertedDocument.find({}).sort({_id:-1}).limit(1);
-            //   res.render('post',{post:p});
+            //console.log(post);
               const createpost = await post.save();
-              res.status(201).render('login');
+               //   const p = await Post.getLastInsertedDocument.find({}).sort({_id:-1}).limit(1);
+            //   res.render('post',{post:p});
+              res.status(201).render('post', {posts: post, username:sess.username});
           }
       catch (error) {
           res.status(400).send(error);
       }
   
      });
-
-
 
      router.patch('/post/:id', (req, res) => {
         const { _id } = req.params;
