@@ -40,9 +40,11 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
 </form>
 <div style="width: 700px;margin:0 auto;">
 <%  if (posts) { %>
-  <% posts.forEach(function(post) { %>
-
-      <div class="w3-container w3-card w3-white w3-round w3-margin" style="width: 700px;"><br>
+  
+    <!-- for(let post in userposts){ -->
+  <% posts.forEach(userpost => { %>
+    <% userpost.forEach(post => { %>
+      <div class="w3-container w3-card w3-white w3-round w3-margin" style="width: 680px;"><br>
         <img src="../images/female-avatar.jpg" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:65px">
         <span class="w3-right w3-opacity"><%=  post.date %></span>
         <h4><%= post.username %></h4><br>
@@ -56,10 +58,22 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
               <img src="/w3images/nature.jpg" style="width:100%" alt="Nature" class="w3-margin-bottom">
           </div> 
         </div> -->
-        <button style="background-color:#189e83;"  class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-thumbs-up"></i>  Like<span><%= post.likesCount %></span></button> 
+        <form action="/post/<%= post._id %>?_method=PATCH" method="POST">
+          <input type="hidden" name="postid" value=<%= post._id %> >
+          
+            <% if(post.likes.includes(username)) { %>
+          <input type="hidden" name="action" value="unlike">
+          <button type="submit" class="w3-button w3-theme-d1 w3-margin-bottom" style="background-color:#189e83;" ><i class="fa fa-thumbs-down"></i> <%= post.likesCount %>  Likes  </button> 
+         
+           <%} else { %>
+            <input type="hidden" name="action" value="like">
+            <button type="submit" class="w3-button w3-theme-d1 w3-margin-bottom" style="background-color:#189e83;" ><i class="fa fa-thumbs-up"></i>  <%= post.likesCount %> Likes</button>
+          <% } %>
+    </form>
          </div>
-         <% }); %>  
- <% } %>   
+    <% }); %>  
+  <% }); %>  
+<% } %>   
 </div> 
 </body>
 </html>

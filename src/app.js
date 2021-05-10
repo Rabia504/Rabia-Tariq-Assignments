@@ -1,9 +1,12 @@
+require('dotenv').config();
 const express = require("express");
 const path = require("path");
 const session = require('express-session');
 const ejs = require("ejs");
 const UserRouter = require("./routers/userRouter");
 const PostRouter = require("./routers/postRouter");
+var cookieParser = require('cookie-parser')
+
 
 const port =  process.env.PORT || 8000;
 const app = express();
@@ -17,6 +20,7 @@ const partialPath = path.join(__dirname,"../templates/partials");
 const publicPath = path.join(__dirname, '..', 'public');
 
 app.use(express.json());
+app.use(cookieParser())
 app.use(express.urlencoded({extended:false}));
 
 //for displaying dynamic content

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const jwt = require("jsonwebtoken");
 
  const userSchema = new mongoose.Schema({
      fullname: {
@@ -45,9 +46,28 @@ const validator = require("validator");
       },
       following: {
         type: [String]
-      }
+      },
+      tokens:[{
+        token:{
+          type:String,
+          required:true
+        }
+      }]
 
  });
+
+ userSchema.methods.createAuthToken = async function(){
+   try {
+    const token = await jwt.sign({_id:this._id.toString()},process.env.SECRET_KEY);
+    this.tokens = this.tokens.concat({token});
+    await this.save();
+    console.log(token);
+    return token;
+   } catch (error) {
+    console.log(error);
+   }
+ }
+
 //collection creation
  const User = new mongoose.model("User", userSchema);
 

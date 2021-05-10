@@ -2,11 +2,17 @@ const express = require("express");
 
 require("../db/conn");
 const User = require("../models/userSchema");
+const auth = require("../middleware/auth");
+
 const router = new express.Router();
 router.use( function( req, res, next ) {
 
     if ( req.query._method == 'DELETE' ) {
         req.method = 'DELETE';
+        req.url = req.path;
+    } 
+    if ( req.query._method == 'PATCH' ) {
+        req.method = 'PATCH';
         req.url = req.path;
     }       
     next(); 
@@ -46,6 +52,11 @@ router.get("/", (req, res)=>{
                 phoneNo: req.body.phone
         
             })
+            const token = await user.createAuthToken();
+           // console.log("token: " +token);
+            res.cookie("jwt", token, 
+                        {expires: new Date(Date.now()+(1000*60)),
+                        httpOnly:true})
             const register = await user.save();
             res.status(201).render('login');
         }
@@ -66,9 +77,14 @@ router.get("/", (req, res)=>{
         const username = req.body.username;
         const password = req.body.password;
         const result = await User.findOne({username:username});
+        
         //console.log(result);
         if (result.password == password)
         {
+            const token = await result.createAuthToken();
+            res.cookie("jwt", token, 
+                        {expires: new Date(Date.now()+(20000)),
+                        httpOnly:true})
             req.session.username = username;
             res.status(201).render('home',{user:result,users:null, flag:false});
         }
@@ -83,7 +99,7 @@ router.get("/", (req, res)=>{
    });
 
    //search user by userrname
-   router.post('/searchuser', async (req, res) => {
+   router.post('/searchuser', auth,async (req, res) => {
     
     try {
         sess = req.session;
@@ -137,24 +153,23 @@ router.get("/", (req, res)=>{
     });
 
   // Update user profile
-router.post('/updateinfo', async (req, res) => {
+router.patch('/updateinfo', async (req, res) => {
 
     try {
         sess = req.session;
+        
         //console.log(sess.username);
         if(sess.username)
         {
-            //console.log(sess.username);
             User.updateOne({username:sess.username}, {$set:{
             email : req.body.email,
             password: req.body.password,
             phoneNo: req.body.phone,
             gender: req.body.gender,
-            dateOfBirth: req.body.dob,
             bio: req.body.bio }},
             function (err, docs) {
                 if (err){
-                console.log("error");
+                console.log(err);
                 }
                 else{
                 console.log("profile updated");
@@ -175,7 +190,7 @@ router.post('/updateinfo', async (req, res) => {
 });
 
 
-router.post('/follow/:id', async (req, res) => {
+router.patch('/follow/:id', async (req, res) => {
     const  id  = req.params.id;
     const uname = req.session.username;
    
@@ -248,9 +263,9 @@ router.delete('/delete/:id', (req, res) => {
         if(sess.username)
         {
             const id = req.params.id;
-            User.delete({_id: id}, function (err) {
+            User.deleteOne({_id: id}, function (err) {
                 if(err) console.log(err);
-                console.log("Successful deletion");
+                console.log("Successful user deletion");
               });
             res.render('login');
 

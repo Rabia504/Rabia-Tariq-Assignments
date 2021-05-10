@@ -30,7 +30,7 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
               <li><a class = "c3" href="/requests">Friend Requests</a></li>
               <li><a class = "c3" href="login">login</a></li>
               <li><a class = "c3" href="signup">signup</a></li>
-              <% if(user){ %>
+              <% if(user.username){ %>
               <li><a class = "c3" href="/post/<%= user.username %>">news feed</a></li>
               <li><a class = "c3" href="profile"><%= user.fullname %></a></li>
               <li><a class = "c3" href="/logout">Logout</a></li>
@@ -52,7 +52,7 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
 
   
   <div align="center" class="s130">
-        <form class="sform" action="/searchuser" method="post" >
+        <form class="sform" action="/searchuser" method="POST" >
           <div class="inner-sform">
             <div class="sinput-field first-wrap">
               <div class="svg-wrapper">
@@ -94,7 +94,7 @@ function Follow(id) {
           <span><h3><b><%= users.fullname %></b></h3></span>
           <div class="w3-row w3-opacity">
             <div class="w3-full">
-              <form action="follow/<%= users._id %>" method="POST">
+              <form action="follow/<%= users._id %>?_method=PATCH" method="POST">
                 <% if(users.followers.includes(user.username)) { %>
                   <input type="hidden" name="action" value="unfollow">
                   <button type="submit" class="w3-button w3-block w3-section" style="background-color: #189e83;color: white;" >Unfollow</button>
@@ -113,6 +113,7 @@ function Follow(id) {
       <h1>User not found</h1>
       <% } %>
   </div>
+  
 
 
 

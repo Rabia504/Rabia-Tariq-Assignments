@@ -42,7 +42,7 @@
                 <div class="col-md-8">
                   <div class="card mb-3">
                     <div class="card-body">
-                        <form method="POST" action="/updateinfo">
+                        <form method="POST" action="/updateinfo?_method=PATCH">
                       <div class="row">
                         <div class="col-sm-3">
                           <h6 class="mb-0">Full Name</h6>
@@ -83,7 +83,7 @@
                         <div class="col-sm-3">
                           <h6 class="mb-0">Date of Birth</h6>
                         </div>
-                        <input  type="date" name="dob"  class="col-sm-9 text-secondary" value=<%= user.dateOfBirth %> >
+                        <input  type="text" name="dob"  class="col-sm-9 text-secondary" value=<%= user.dateOfBirth %> readonly >
                       </div>
                       <hr>
                       <div class="row">
