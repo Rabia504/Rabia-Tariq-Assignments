@@ -1,5 +1,7 @@
 const express = require("express");
-//const alert = require("alert");
+var moment = require('moment');
+const auth = require("../middleware/auth");
+
 require("../db/conn");
 const Post = require("../models/postSchema");
 const User = require("../models/userSchema");
@@ -18,12 +20,10 @@ router.use( function( req, res, next ) {
 });
 
 
-   router.get('/post/:username', async (req, res) => {
-     const uname = req.params.username;
-     req.session.username = uname;
-     const user = await User.findOne({username:uname});
+   router.get('/post',auth, async (req, res) => {
+     const username = req.cookies.user.username;
+     const user = await User.findOne({username});
      const following = user.following;
-     //console.log(following);
      let posts = [];
      for(let i in following){
       const post =  await Post.find({username:following[i]});
@@ -32,32 +32,44 @@ router.use( function( req, res, next ) {
      }
      
 
-    res.render('post', {posts: posts, username:uname});
+    res.render('post', {posts:posts,username:username});
   });
 
+  router.get('/myposts',auth, async (req, res) => {
+    const username = req.cookies.user.username;
+    const post =  await Post.find({username}).sort({time: -1});
+    //console.log(post[2].time.toLocaleTimeString());
+   res.render('myposts', {posts: post, username:username});
+ });
 
-   router.post("/post/:username", async (req, res)=>{
+
+   router.post("/post", async (req, res)=>{
       try{
-              var d=new Date();
-              const sess = req.session;
+              const username = req.cookies.user.username;
               const post = new Post({
-                  username: sess.username,
+                  username: username,
                   postContent: req.body.content,
-                  date : d.toLocaleTimeString(),
+                  time : new Date(),
                   likes: [],
                   likesCount: 0
               })
             //console.log(post);
               const createpost = await post.save();
 
-              let posts = [];
-              const user = await User.findOne({username:req.params.username});
-              const following = user.following;
-              for(let i in following){
-               const post =  await Post.find({username:following[i]});
-               posts.push(post);
+              if(req.body.mypost=="mypost"){
+                const post =  await Post.find({username}).sort({time: -1});
+                res.status(201).render('myposts', {posts: post, username:username});
               }
-              res.status(201).render('post', {posts: posts, username:sess.username});
+              else{
+                let posts = [];
+                const user = await User.findOne({username});
+                const following = user.following;
+                for(let i in following){
+                const post =  await Post.find({username:following[i]}).sort({time: -1});
+                posts.push(post);
+                }
+                res.status(201).render('post', {posts: posts, username:username});
+            }
           }
       catch (error) {
           res.status(400).send(error);
@@ -68,12 +80,12 @@ router.use( function( req, res, next ) {
    router.patch('/post/:id', async (req, res) => {
         const id  = req.params.id;
         const postId = req.body.postid;
-        //console.log(postId);
+        const username = req.cookies.user.username;
         if (req.body.action === 'like') {
           try {
             //console.log(req.body.action);
                 Post.findByIdAndUpdate({_id:postId}, {$inc: { likesCount: 1 }, 
-                $push:  { likes: req.session.username } },
+                $push:  { likes: username } },
                 function (err, docs) {
                 if (err){
                 console.log(err);
@@ -89,7 +101,7 @@ router.use( function( req, res, next ) {
         if (req.body.action === 'unlike') {
           try {
             Post.findByIdAndUpdate({_id:id}, {$inc: { likesCount: -1 }, 
-                $pull:  { likes: req.session.username } },
+                $pull:  { likes: username } },
                 function (err, docs) {
                 if (err){
                 console.log(err);
@@ -119,7 +131,7 @@ router.use( function( req, res, next ) {
             }
           }
 
-          const user = await User.findOne({username:req.session.username});
+          const user = await User.findOne({username});
           const following = user.following;
           //console.log(following);
           let posts = [];
@@ -130,21 +142,23 @@ router.use( function( req, res, next ) {
           }
           
 
-          res.render('post', {posts: posts, username:req.session.username});
+          res.render('post', {posts: posts, username:username});
 
       });
     
       
-      router.delete('/post/:id', (req, res) => {
-        
+      router.delete('/post/:id', async(req, res) => {
+            const username = req.cookies.user.username;
             const id = req.params.id;
             Post.deleteOne({_id: id}, function (err) {
-              if(err) console.log(err);
-              console.log("Successful post deletion");
-            });
-        
-          return res.status(404).send(err);
-        
+                if(err) console.log(err);
+                console.log("Successful post deletion");
+              });
+              const post =  await Post.find({username});
+
+              res.render('myposts', {posts: post, username:username});
+           
+
       });
 
 

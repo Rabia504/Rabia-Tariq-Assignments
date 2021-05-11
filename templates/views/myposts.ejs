@@ -20,7 +20,7 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
             <div class="w3-container w3-padding">
               <h6 class="w3-opacity">Write Post!</h6>
               <input type="text" name="content" style="width: 620px;" class="w3-border w3-padding" placeholder="What's on your mind?">
-            
+              <input type="hidden" name="mypost" value="mypost">
              <p><input type="file" accept="image/*" name="image" id="file"  onchange="loadFile(event)" style="display: none;"></p>
             <p><label for="file"  class="w3-border w3-padding" style="cursor: pointer;">Upload Image</label></p>
             <p><img id="output" width="200" /></p>
@@ -42,11 +42,12 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
 <%  if (posts) { %>
   
     <!-- for(let post in userposts){ -->
-  <% posts.forEach(userpost => { %>
-    <% userpost.forEach(post => { %>
+  <% posts.forEach(post => { %>
+  
       <div class="w3-container w3-card w3-white w3-round w3-margin" style="width: 680px;"><br>
         <img src="../images/female-avatar.jpg" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:65px">
         <span class="w3-right w3-opacity"><%=  post.time.toLocaleTimeString() %></span>
+        <br><a href="/post?_method=DELETE"><i class="fa fa-trash w3-xlarge w3-right"></i></a>
         <h4><%= post.username %></h4><br>
         <hr class="w3-clear">
         <p><%= post.postContent %></p>
@@ -71,7 +72,7 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
           <% } %>
     </form>
          </div>
-    <% }); %>  
+
   <% }); %>  
 <% } %>   
 </div> 

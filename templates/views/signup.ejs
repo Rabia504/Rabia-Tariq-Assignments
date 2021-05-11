@@ -16,8 +16,13 @@
             <input type="password" class = "input-box" name="password" placeholder="Your Password" required><br><br>
             <input type="password" class = "input-box" name="confirmpassword" placeholder="Confirm Password" required><br><br>
             <input type="number" class = "input-box" name="phone" placeholder="Phone No."><br><br>
-            <input type="text" class = "input-box" name="gender" placeholder="Your Gender" required><br><br>
-            <input type="date" class = "input-box" name="dob" placeholder="Date of Birth"><br><br>
+            <select name="gender" class = "input-box">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="">Other</option>
+              </select>
+              <br><br>
+            <input type="date" class = "input-box" name="dob" placeholder="Date of Birth" required><br><br>
             <p><span><input type = "checkbox"></span> i agree to terms and conditions </p><br><br>
             <button type="submit" name="submit" class="btn">Sign up</button> 
             <p> Do you have an account ?<a href="/login">Sign in</a></p>

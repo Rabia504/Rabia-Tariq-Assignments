@@ -11,8 +11,8 @@ const validator = require("validator");
         type: String,       
         required: true
       },
-      date: {
-        type: String,
+      time: {
+        type: Date,
         required: true
       },
       likes: {

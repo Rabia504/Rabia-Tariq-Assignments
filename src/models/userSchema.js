@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const ValidationError = mongoose.Error.ValidationError;
+const ValidatorError  = mongoose.Error.ValidatorError;
 const jwt = require("jsonwebtoken");
 
+           // maxlength: [20, 'Username must be less than 20 characters.'],
+           // required: [true, 'Your username cannot be blank.'],
  const userSchema = new mongoose.Schema({
      fullname: {
          type:String,
@@ -25,13 +29,14 @@ const jwt = require("jsonwebtoken");
       password: {
         type: String,
         required: true,
-        minlength: 8
+        minlength: [8, 'Username must be at least 2 characters.']
       },
       gender: {
         type: String
       },
       dateOfBirth: {
-        type: Date
+        type: Date,
+        required: true
       },
       phoneNo : {
         type: Number,
@@ -61,7 +66,7 @@ const jwt = require("jsonwebtoken");
     const token = await jwt.sign({_id:this._id.toString()},process.env.SECRET_KEY);
     this.tokens = this.tokens.concat({token});
     await this.save();
-    console.log(token);
+    //console.log(token);
     return token;
    } catch (error) {
     console.log(error);

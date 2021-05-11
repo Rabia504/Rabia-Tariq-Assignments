@@ -1,8 +1,10 @@
 const express = require("express");
+const validateSignup = require('../validations/signupValidator');
 
 require("../db/conn");
 const User = require("../models/userSchema");
 const auth = require("../middleware/auth");
+
 
 const router = new express.Router();
 router.use( function( req, res, next ) {
@@ -18,9 +20,8 @@ router.use( function( req, res, next ) {
     next(); 
   });
 
-router.get("/", (req, res)=>{
-    //console.log (req.body);
-    
+router.get("/", auth, async(req, res)=>{
+
    res.render('home',{user:[],users:null, flag:false});
    });
 
@@ -29,7 +30,12 @@ router.get("/", (req, res)=>{
    });
 
    router.post("/signup", async (req, res)=>{
+    const  errors = validateSignup(req.body);
+    if (Object.entries(errors).length !== 0) {
+      return res.status(400).json(errors);
+    }
     try{
+      
         const username = await User.find({username:req.body.username}).select({username:1});
         const email = await User.find({email:req.body.email}).select({email:1});
         //console.log(username.length);
@@ -55,7 +61,7 @@ router.get("/", (req, res)=>{
             const token = await user.createAuthToken();
            // console.log("token: " +token);
             res.cookie("jwt", token, 
-                        {expires: new Date(Date.now()+(1000*60)),
+                        {expires: new Date(Date.now()+150000),
                         httpOnly:true})
             const register = await user.save();
             res.status(201).render('login');
@@ -83,7 +89,7 @@ router.get("/", (req, res)=>{
         {
             const token = await result.createAuthToken();
             res.cookie("jwt", token, 
-                        {expires: new Date(Date.now()+(20000)),
+                        {expires: new Date(Date.now()+150000),
                         httpOnly:true})
             req.session.username = username;
             res.status(201).render('home',{user:result,users:null, flag:false});
@@ -102,25 +108,16 @@ router.get("/", (req, res)=>{
    router.post('/searchuser', auth,async (req, res) => {
     
     try {
-        sess = req.session;
-        if(sess.username)
-        {
-            const username = req.body.username;
-            const currentuser = await User.findOne({username:sess.username});
-            //console.log(currentuser);
-            const user = await User.findOne({username:username});
+            const username = req.cookies.user.username;
+			 const searchedUname = req.body.username;
+            const currentuser = await User.findOne({username});
+            const user = await User.findOne({username:searchedUname});
             if (user) {
-                
+
                 res.render('home', {user:currentuser,users:user,flag:true});
             } else { 
                 res.render('home' ,{user:currentuser,users:null,flag:true});
             }
-        }
-        else
-        {
-            console.log("You are not logged in");
-            res.render('login');
-        }
     } catch (error) {
             res.status(400).send(error);
     }
@@ -128,24 +125,18 @@ router.get("/", (req, res)=>{
   });
 
   //view profile info
-  router.get("/profile", async (req, res) => {
+  router.get("/profile", auth, async (req, res) => {
     
     try {
-        sess = req.session;
-        if(sess.username)
-        {
-            const user = await User.findOne({username:sess.username});
+            const username = req.cookies.user.username;
+            const user = await User.findOne({username});
             if (user) {
                 res.render('profile', {user:user});
             } else { 
                 res.status(400).send("user not found");
             }
         }
-        else{
-            console.log("You are not logged in");
-            res.render('login');
-        }
-    } catch (error) {
+    catch (error) {
             res.status(400).send(error);
         }
     
@@ -153,15 +144,11 @@ router.get("/", (req, res)=>{
     });
 
   // Update user profile
-router.patch('/updateinfo', async (req, res) => {
+router.patch('/updateinfo', auth, async (req, res) => {
 
     try {
-        sess = req.session;
-        
-        //console.log(sess.username);
-        if(sess.username)
-        {
-            User.updateOne({username:sess.username}, {$set:{
+            const username = req.cookies.user.username;
+            User.updateOne({username}, {$set:{
             email : req.body.email,
             password: req.body.password,
             phoneNo: req.body.phone,
@@ -176,28 +163,24 @@ router.patch('/updateinfo', async (req, res) => {
                 }
              });
           
-             const user = await User.findOne({username:sess.username});
+             const user = await User.findOne({username});
              res.render('profile', {user:user});
 
-       }
-       else{
-        console.log("You are not logged in");
-        res.render('login');
-       }
+       
+      
     }catch (error) {
         res.status(400).send(error);
     }
 });
 
 
-router.patch('/follow/:id', async (req, res) => {
+router.patch('/follow/:id',auth, async (req, res) => {
     const  id  = req.params.id;
-    const uname = req.session.username;
+    const uname = req.cookies.user.username;
    
     if (req.body.action === 'follow') {
       try {
             const user = await User.findOne({_id:id});
-           
             //adding current user to the followers list of the user followed
             User.findByIdAndUpdate({_id:id}, { $push:  { followers:uname } },
                 function (err, docs) {
@@ -246,7 +229,6 @@ router.patch('/follow/:id', async (req, res) => {
                     console.log("user removed from following");
                     res.status(201).send("User unfollowed");
                   }});
-
         } catch (err) {
           return res.status(400).send(err);
         }
@@ -256,23 +238,14 @@ router.patch('/follow/:id', async (req, res) => {
 
 
 //delete user profile
-router.delete('/delete/:id', (req, res) => {
-
-    try {
-        sess = req.session;
-        if(sess.username)
-        {
+router.delete('/delete/:id',auth, (req, res) => {
+    try{
             const id = req.params.id;
             User.deleteOne({_id: id}, function (err) {
                 if(err) console.log(err);
                 console.log("Successful user deletion");
               });
             res.render('login');
-
-        }else{
-            console.log("You are not logged in");
-            res.render('login');
-        }
 
     }catch (error) {
         res.status(400).send(error);
@@ -281,13 +254,15 @@ router.delete('/delete/:id', (req, res) => {
 
 
 //logout user
-router.get('/logout',(req,res) => {
-    req.session.destroy((error) => {
-        if(error) {
-            return console.log(error);
-        }
-        res.redirect('login');
-    });
+router.get('/logout',auth, (req,res) => {
+   try {
+       res.clearCookie("jwt");
+       res.clearCookie("user");
+       res.redirect('login');
+   } catch (error) {
+     res.status(400).send(error);
+   }
+    
 
 });
 

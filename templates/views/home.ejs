@@ -27,11 +27,11 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
             <ul class="primary-nav">
               <li><a class = "child1" href="">Social Network</a></li>
               <li><a class = "c2" href="">Home</a></li>
-              <li><a class = "c3" href="/requests">Friend Requests</a></li>
               <li><a class = "c3" href="login">login</a></li>
               <li><a class = "c3" href="signup">signup</a></li>
               <% if(user.username){ %>
-              <li><a class = "c3" href="/post/<%= user.username %>">news feed</a></li>
+              <li><a class = "c3" href="/post">news feed</a></li>
+              <li><a class = "c3" href="/myposts">My Posts</a></li>
               <li><a class = "c3" href="profile"><%= user.fullname %></a></li>
               <li><a class = "c3" href="/logout">Logout</a></li>
               <% } %>
@@ -68,21 +68,6 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
           </div>
         </form>
       </div>
-<script>
-function Follow(id) {
-	
-  $.ajax({
-    url: '/follow/'+id,
-    type: 'PATCH',
-    data: {
-      receiverID: id
-    },
-    success: function() {
-       
-    }
-  })
-}
-</script>
 
   <div style="margin-top: 50px;">
     <% if (users && flag) { %>
