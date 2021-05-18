@@ -1,3 +1,4 @@
+export{};
 const a="1";
 let hello="world";
 
@@ -152,7 +153,7 @@ enum StatusEnum {
 // we can use emuns as datatypes as well
 let notStartedStatus: StatusEnum  = StatusEnum.NotStarted;
 notStartedStatus = StatusEnum.Done;
-console.log("status of new task: "+StatusEnum.InProgress);
+console.log("status of new task is : "+StatusEnum.InProgress);
 
 interface Task {
     id : string;

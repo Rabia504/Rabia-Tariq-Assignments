@@ -48,3 +48,4 @@ const teacher: TeacherInterface<string, string[]> = {
     id : "bsT1",
     course : ["maths", "physics"]
 }
+console.log("Course: "+teacher.course[0])

@@ -1,3 +1,5 @@
+"use strict";
+exports.__esModule = true;
 var a = "1";
 var hello = "world";
 //we an specify type of variable like this
@@ -99,7 +101,7 @@ var StatusEnum;
 // we can use emuns as datatypes as well
 var notStartedStatus = StatusEnum.NotStarted;
 notStartedStatus = StatusEnum.Done;
-console.log("status of new task: " + StatusEnum.InProgress);
+console.log("status of new task is : " + StatusEnum.InProgress);
 var task1 = {
     id: "A123",
     status: StatusEnum.Done

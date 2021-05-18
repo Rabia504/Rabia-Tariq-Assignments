@@ -36,4 +36,5 @@ const user = new User("Rabia","Tariq");
 console.log(user.getFullName());
 console.log(User.maxAge);
 const std = new Student("Rabia","Tariq");
+console.log(std.getFullName());
 console.log(std.getStudentID());
