@@ -4,8 +4,6 @@ const ValidationError = mongoose.Error.ValidationError;
 const ValidatorError  = mongoose.Error.ValidatorError;
 const jwt = require("jsonwebtoken");
 
-           // maxlength: [20, 'Username must be less than 20 characters.'],
-           // required: [true, 'Your username cannot be blank.'],
  const userSchema = new mongoose.Schema({
      fullname: {
          type:String,

@@ -24,6 +24,7 @@ const validator = require("validator");
       }
  });
 
+ 
  const Post = new mongoose.model("Post", postSchema);
 
  module.exports = Post;

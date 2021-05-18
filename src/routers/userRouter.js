@@ -5,7 +5,6 @@ require("../db/conn");
 const User = require("../models/userSchema");
 const auth = require("../middleware/auth");
 
-
 const router = new express.Router();
 router.use( function( req, res, next ) {
 

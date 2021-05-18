@@ -7,7 +7,6 @@ const UserRouter = require("./routers/userRouter");
 const PostRouter = require("./routers/postRouter");
 var cookieParser = require('cookie-parser')
 
-
 const port =  process.env.PORT || 8000;
 const app = express();
 

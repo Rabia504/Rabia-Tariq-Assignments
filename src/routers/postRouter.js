@@ -19,7 +19,6 @@ router.use( function( req, res, next ) {
   next(); 
 });
 
-
    router.get('/post',auth, async (req, res) => {
      const username = req.cookies.user.username;
      const user = await User.findOne({username});
@@ -30,7 +29,7 @@ router.use( function( req, res, next ) {
       
       posts.push(post);
      }
-     
+
 
     res.render('post', {posts:posts,username:username});
   });

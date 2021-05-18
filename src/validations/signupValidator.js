@@ -19,7 +19,6 @@ const validateSignup = (data) => {
     errors.confirmPassword = 'Password and Confirm Password donot match';
   }
 
-
   return  errors;
 };
 
