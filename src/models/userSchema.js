@@ -29,7 +29,7 @@ const jwt = require("jsonwebtoken");
       password: {
         type: String,
         required: true,
-        minlength: [8, 'Username must be at least 2 characters.']
+        minlength: [8, 'password must be at least 8 characters.']
       },
       gender: {
         type: String
